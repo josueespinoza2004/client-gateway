@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Inject,
   Param,
@@ -17,6 +18,11 @@ export class EstudiantesController {
     @Inject(ESTUDIANTE_SERVICE) private readonly estudianteClient: ClientProxy,
   ) {}
 
+  @Post()
+  create(@Body() estudianteDto: CreateEstudianteDto) {
+    return this.estudianteClient.send({ cmd: 'create_student' }, estudianteDto);
+  }
+
   @Get()
   getAll() {
     return this.estudianteClient.send({ cmd: 'get_all_students' }, {});
@@ -24,11 +30,11 @@ export class EstudiantesController {
 
   @Get(':id')
   getOne(@Param('id', ParseIntPipe) id: number) {
-    return this.estudianteClient.send({ cmd: 'get_student' }, id);
+    return this.estudianteClient.send({ cmd: 'get_one_student' }, id);
   }
 
-  @Post()
-  create(@Body() estudianteDto: CreateEstudianteDto) {
-    return this.estudianteClient.send({ cmd: 'create_student' }, estudianteDto);
+  @Delete(':id')
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.estudianteClient.send({ cmd: 'remove_student' }, id);
   }
 }
