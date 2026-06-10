@@ -15,9 +15,7 @@ import { FILE_SERVICE } from 'src/config/service';
 
 @Controller('files')
 export class FilesController {
-  constructor(
-    @Inject(FILE_SERVICE) private readonly fileClient: ClientProxy,
-  ) {}
+  constructor(@Inject(FILE_SERVICE) private readonly fileClient: ClientProxy) {}
 
   @Post('upload/:modelId')
   @UseInterceptors(FileInterceptor('file'))
