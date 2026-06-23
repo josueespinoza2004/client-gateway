@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Inject,
   Param,
   ParseIntPipe,
@@ -12,6 +13,7 @@ import {
 import { ClientProxy } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { FILE_SERVICE } from 'src/config/service';
+import { firstValueFrom } from 'rxjs';
 
 @Controller('files')
 export class FilesController {
@@ -35,8 +37,19 @@ export class FilesController {
   }
 
   @Get(':id')
-  getOne(@Param('id', ParseIntPipe) id: number) {
-    return this.fileClient.send({ cmd: 'get_file' }, id);
+  async getOne(@Param('id', ParseIntPipe) id: number) {
+    const result = await firstValueFrom(
+      this.fileClient.send({ cmd: 'get_file' }, id),
+    );
+
+    if (result?.error) {
+      throw new HttpException(
+        result.message || 'Archivo no encontrado',
+        result.statusCode || 404,
+      );
+    }
+
+    return result;
   }
 
   @Get('model/:modelId')
